@@ -83,14 +83,34 @@ class CinnamonCinemaTest {
 
         int randomSeats2 = (int)Math.floor(Math.random() * (max - min + 1) + min);
         assertTrue(cinema.buyFilmTickets("bill",randomSeats2));
-        if((randomSeats1 + randomSeats2) <= 5){
-            int seatsLeft2 = 5 - (randomSeats1 + randomSeats2);
+
+        int randomSeats3 = (int)Math.floor(Math.random() * (max - min + 1) + min);
+        assertTrue(cinema.buyFilmTickets("jon",randomSeats3));
+
+        
+        if((randomSeats1 + randomSeats2 + randomSeats3) <= 5){
+            int seatsLeft2 = 5 - (randomSeats1 + randomSeats2 + randomSeats2);
             assertEquals(seatsLeft2,cinema.seatsLeftInRow(0));
+        } else if((randomSeats1 + randomSeats2 + randomSeats3) <= 8) {
+            if(randomSeats1 + randomSeats2 <= 5){
+                int seatsLeft11 = 5 - (randomSeats1 + randomSeats2);
+                int seatsLeft12 = 5 - randomSeats3;
+                assertEquals(seatsLeft11,cinema.seatsLeftInRow(0));
+                assertEquals(seatsLeft12,cinema.seatsLeftInRow(1));
+            } else {
+                int seatsLeft11 = 5 - (randomSeats1 + randomSeats3);
+                int seatsLeft12 = 5 - randomSeats2;
+                assertEquals(seatsLeft11, cinema.seatsLeftInRow(0));
+                assertEquals(seatsLeft12, cinema.seatsLeftInRow(1));
+            }
+
         } else {
-            int seatsLeft11 = 5 - randomSeats1;;
+            int seatsLeft11 = 5 - randomSeats1;
             int seatsLeft12 = 5 - randomSeats2;
+            int seatsLeft13 = 5 - randomSeats3;
             assertEquals(seatsLeft11,cinema.seatsLeftInRow(0));
             assertEquals(seatsLeft12,cinema.seatsLeftInRow(1));
+            assertEquals(seatsLeft13,cinema.seatsLeftInRow(2));
         }
     }
 }
