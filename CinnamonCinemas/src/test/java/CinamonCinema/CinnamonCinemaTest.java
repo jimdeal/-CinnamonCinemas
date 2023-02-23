@@ -2,6 +2,8 @@ package CinamonCinema;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Random;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class CinnamonCinemaTest {
@@ -57,6 +59,15 @@ class CinnamonCinemaTest {
         assertEquals(1,cinema.seatsLeftInRow(1));
         assertEquals(2,cinema.seatsLeftInRow(2));
     }
+
+    @Test
+    void buyFilmTicketsRandom() {
+    }
+
+    @Test
+    void twoUsersBuyFilmTicketsRandom() {
+    }
+
 
 
 }
