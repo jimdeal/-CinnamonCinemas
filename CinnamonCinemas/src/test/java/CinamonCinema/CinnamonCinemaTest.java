@@ -11,15 +11,15 @@ class CinnamonCinemaTest {
     @Test
     void buyFilmTickets() {
         CinnamonCinema cinema = new CinnamonCinema();
-        assertTrue(cinema.buyFilmTickets("fred",2));
+        assertEquals(0,cinema.buyFilmTickets("fred",2));
         assertEquals(3,cinema.seatsLeftInRow(0));
     }
 
     @Test
     void twoUsersBuyFilmTickets() {
         CinnamonCinema cinema = new CinnamonCinema();
-        assertTrue(cinema.buyFilmTickets("ted",2));
-        assertTrue(cinema.buyFilmTickets("bill",2));
+        assertEquals(0,cinema.buyFilmTickets("ted",2));
+        assertEquals(0,cinema.buyFilmTickets("bill",2));
         assertEquals(1,cinema.seatsLeftInRow(0));
     }
 
@@ -27,9 +27,9 @@ class CinnamonCinemaTest {
     @Test
     void threeUsersBuyFilmTickets() {
         CinnamonCinema cinema = new CinnamonCinema();
-        assertTrue(cinema.buyFilmTickets("ted",2));
-        assertTrue(cinema.buyFilmTickets("bill",2));
-        assertTrue(cinema.buyFilmTickets("sue",2));
+        assertEquals(0,cinema.buyFilmTickets("ted",2));
+        assertEquals(0,cinema.buyFilmTickets("bill",2));
+        assertEquals(1,cinema.buyFilmTickets("sue",2));
         assertEquals(1,cinema.seatsLeftInRow(0));
         assertEquals(3,cinema.seatsLeftInRow(1));
 
@@ -38,10 +38,10 @@ class CinnamonCinemaTest {
     @Test
     void mixUsersBuyFilmTickets1() {
         CinnamonCinema cinema = new CinnamonCinema();
-        assertTrue(cinema.buyFilmTickets("ted",3));
-        assertTrue(cinema.buyFilmTickets("bill",2));
-        assertTrue(cinema.buyFilmTickets("sue",1));
-        assertTrue(cinema.buyFilmTickets("jim",3));
+        assertEquals(0,cinema.buyFilmTickets("ted",3));
+        assertEquals(0,cinema.buyFilmTickets("bill",2));
+        assertEquals(1,cinema.buyFilmTickets("sue",1));
+        assertEquals(1,cinema.buyFilmTickets("jim",3));
         assertEquals(0,cinema.seatsLeftInRow(0));
         assertEquals(1,cinema.seatsLeftInRow(1));
     }
@@ -49,12 +49,12 @@ class CinnamonCinemaTest {
     @Test
     void mixUsersBuyFilmTickets2() {
         CinnamonCinema cinema = new CinnamonCinema();
-        assertTrue(cinema.buyFilmTickets("ted",3));
-        assertTrue(cinema.buyFilmTickets("bill",2));
-        assertTrue(cinema.buyFilmTickets("sue",1));
-        assertTrue(cinema.buyFilmTickets("jim",3));
-        assertTrue(cinema.buyFilmTickets("jon",3));
-        assertFalse(cinema.buyFilmTickets("fred",3));
+        assertEquals(0,cinema.buyFilmTickets("ted",3));
+        assertEquals(0,cinema.buyFilmTickets("bill",2));
+        assertEquals(1,cinema.buyFilmTickets("sue",1));
+        assertEquals(1,cinema.buyFilmTickets("jim",3));
+        assertEquals(2,cinema.buyFilmTickets("jon",3));
+        assertEquals(-1,cinema.buyFilmTickets("fred",3));
         assertEquals(0,cinema.seatsLeftInRow(0));
         assertEquals(1,cinema.seatsLeftInRow(1));
         assertEquals(2,cinema.seatsLeftInRow(2));
@@ -65,46 +65,53 @@ class CinnamonCinemaTest {
         CinnamonCinema cinema = new CinnamonCinema();
         Random rand = new Random();
         int randomSeats = rand.nextInt(4);
-        assertTrue(cinema.buyFilmTickets("fred",randomSeats));
+        assertEquals(0,cinema.buyFilmTickets("fred",randomSeats));
         assertEquals((5 - randomSeats),cinema.seatsLeftInRow(0));
     }
 
     @Test
-    void twoUsersBuyFilmTicketsRandom() {
+    void threeUsersBuyFilmTicketsRandom() {
         int min = 2; // Minimum value of range
         int max = 3;
 
         CinnamonCinema cinema = new CinnamonCinema();
         Random rand = new Random();
         int randomSeats1 = (int)Math.floor(Math.random() * (max - min + 1) + min);
-        assertTrue(cinema.buyFilmTickets("ted",randomSeats1));
+        assertEquals(0,cinema.buyFilmTickets("ted",randomSeats1));
         int seatsLeft1 = 5 - randomSeats1;
         assertEquals(seatsLeft1,cinema.seatsLeftInRow(0));
 
         int randomSeats2 = (int)Math.floor(Math.random() * (max - min + 1) + min);
-        assertTrue(cinema.buyFilmTickets("bill",randomSeats2));
+        int currentTotal = randomSeats2 + randomSeats1;
+        int rowSeatsIn = cinema.buyFilmTickets("bill",randomSeats2);
+
+        if(currentTotal<=5){
+            assertEquals((5-currentTotal),cinema.seatsLeftInRow(0));
+        } else {
+            assertEquals(5-randomSeats1,cinema.seatsLeftInRow(0));
+            assertEquals(5-randomSeats2,cinema.seatsLeftInRow(rowSeatsIn));
+        }
 
         int randomSeats3 = (int)Math.floor(Math.random() * (max - min + 1) + min);
-        assertTrue(cinema.buyFilmTickets("jon",randomSeats3));
+        int currentTotal1 = randomSeats3 + randomSeats2 + randomSeats1;
+        assertFalse(cinema.buyFilmTickets("bill",randomSeats3) == -1);
 
-        
-        if((randomSeats1 + randomSeats2 + randomSeats3) <= 5){
-            int seatsLeft2 = 5 - (randomSeats1 + randomSeats2 + randomSeats2);
-            assertEquals(seatsLeft2,cinema.seatsLeftInRow(0));
-        } else if((randomSeats1 + randomSeats2 + randomSeats3) <= 8) {
-            if(randomSeats1 + randomSeats2 <= 5){
-                int seatsLeft11 = 5 - (randomSeats1 + randomSeats2);
-                int seatsLeft12 = 5 - randomSeats3;
-                assertEquals(seatsLeft11,cinema.seatsLeftInRow(0));
-                assertEquals(seatsLeft12,cinema.seatsLeftInRow(1));
+        if(currentTotal1<=5){
+            assertEquals((5-currentTotal1),cinema.seatsLeftInRow(0));
+        } else if (currentTotal1<=8){
+            if((randomSeats1 == 3) && (randomSeats2 == 3)){
+                // row 0 = randomSeats1 + randomSeats3
+                int current0SeatsTotal = randomSeats1 + randomSeats3;
+                assertEquals((5-current0SeatsTotal),cinema.seatsLeftInRow(0));
+                assertEquals((5-randomSeats2), cinema.seatsLeftInRow(1));
             } else {
-                int seatsLeft11 = 5 - (randomSeats1 + randomSeats3);
-                int seatsLeft12 = 5 - randomSeats2;
-                assertEquals(seatsLeft11, cinema.seatsLeftInRow(0));
-                assertEquals(seatsLeft12, cinema.seatsLeftInRow(1));
-            }
+                // row 0 = randomSeats1 + randomSeats2
+                int current0SeatsTotal = randomSeats1 + randomSeats2;
+                assertEquals((5-current0SeatsTotal),cinema.seatsLeftInRow(0));
+                assertEquals((5-randomSeats3), cinema.seatsLeftInRow(1));
 
-        } else {
+            }
+        }else { //currentTotal1>8
             int seatsLeft11 = 5 - randomSeats1;
             int seatsLeft12 = 5 - randomSeats2;
             int seatsLeft13 = 5 - randomSeats3;

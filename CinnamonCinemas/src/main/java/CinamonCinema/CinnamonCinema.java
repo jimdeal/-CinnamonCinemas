@@ -8,8 +8,8 @@ public class CinnamonCinema {
     private String[][] screenSeats = new String[][]{{"-1","-1","-1","-1","-1","0"},
             {"-1","-1","-1","-1","-1","0"},{"-1","-1","-1","-1","-1","0"}};
 
-    public boolean buyFilmTickets(String user, int numberOfTickets){
-        boolean purchaseSuccess = false;
+    public int buyFilmTickets(String user, int numberOfTickets){
+        int rowSeatsPurchased = -1;
         for(int row = 0; row < NUMBER_OF_ROWS; row++){
             int takenSeatsInRow = Integer.parseInt(screenSeats[row][5]);
             if(NUMBER_OF_SEATS_IN_ROW - takenSeatsInRow >= numberOfTickets){
@@ -18,12 +18,12 @@ public class CinnamonCinema {
                     screenSeats[row][fillSeats] = user;
                 }
                 screenSeats[row][5] = Integer.toString(seatsToFill);
-                purchaseSuccess = true;
+                rowSeatsPurchased = row;
                 break;
             }
         }
 
-        return purchaseSuccess;
+        return rowSeatsPurchased;
     }
 
     public int seatsLeftInRow(int row){
