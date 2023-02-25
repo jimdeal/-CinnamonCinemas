@@ -32,7 +32,15 @@ class CinnamonCinemaTest {
         assertEquals(1,cinema.buyFilmTickets("sue",2));
         assertEquals(1,cinema.seatsLeftInRow(0));
         assertEquals(3,cinema.seatsLeftInRow(1));
+    }
 
+    @Test
+    void fourUsersBuyFilmTickets() {
+        CinnamonCinema cinema = new CinnamonCinema();
+        assertEquals(0,cinema.buyFilmTickets("ted",3));
+        assertEquals(1,cinema.buyFilmTickets("bill",3));
+        assertEquals(2,cinema.buyFilmTickets("sue",3));
+        assertEquals(-1,cinema.buyFilmTickets("jon",3));
     }
 
     @Test
@@ -193,7 +201,122 @@ class CinnamonCinemaTest {
             assertTrue((row0+row1+row2) >= 4);
             assertTrue((row0+row1) <= 11);
         }
+    }
 
+    @Test
+    void testMultipleUsersBuyFilmTicketsRandom() {
+        int[] rowTickets = {0,0,0};
+
+        int min = 1; // Minimum value of range
+        int max = 3;
+
+        CinnamonCinema cinema = new CinnamonCinema();
+        Random rand = new Random();
+        int randomSeats1 = (int)Math.floor(Math.random() * (max - min + 1) + min);
+        int runningTotal = randomSeats1;
+        int rowSeatsIn = cinema.buyFilmTickets("ted",randomSeats1);
+        assertEquals(0,rowSeatsIn);
+        if(rowSeatsIn>=0){
+            rowTickets[rowSeatsIn] += randomSeats1;
+        }
+        int seatsLeft1 = 5 - randomSeats1;
+        assertEquals(seatsLeft1,cinema.seatsLeftInRow(rowSeatsIn));
+
+        assertEquals(5-cinema.seatsLeftInRow(0), rowTickets[0]);
+        assertEquals(5-cinema.seatsLeftInRow(1), rowTickets[1]);
+        assertEquals(5-cinema.seatsLeftInRow(2), rowTickets[2]);
+
+
+        int randomSeats2 = (int)Math.floor(Math.random() * (max - min + 1) + min);
+        runningTotal = randomSeats2 + randomSeats1;
+        int rowSeatsIn1 = cinema.buyFilmTickets("bill",randomSeats2);
+        assertTrue(rowSeatsIn1 >= 0);
+        if(rowSeatsIn1>=0){
+            rowTickets[rowSeatsIn1] += randomSeats2;
+        }
+        if(runningTotal<=5){
+            assertEquals((5-runningTotal),cinema.seatsLeftInRow(0));
+        } else {
+            assertEquals(5-randomSeats1,cinema.seatsLeftInRow(0));
+            assertEquals(5-randomSeats2,cinema.seatsLeftInRow(rowSeatsIn1));
+        }
+        assertEquals(5-cinema.seatsLeftInRow(0), rowTickets[0]);
+        assertEquals(5-cinema.seatsLeftInRow(1), rowTickets[1]);
+        assertEquals(5-cinema.seatsLeftInRow(2), rowTickets[2]);
+
+
+        int randomSeats3 = (int)Math.floor(Math.random() * (max - min + 1) + min);
+        runningTotal = randomSeats3 + randomSeats2 + randomSeats1;
+        int rowSeatsIn2 = cinema.buyFilmTickets("jon",randomSeats3);
+        assertTrue(rowSeatsIn2 >= 0);
+        if(rowSeatsIn2>=0){
+            rowTickets[rowSeatsIn2] += randomSeats3;
+        }
+        if(runningTotal<=5){
+            assertEquals((5-runningTotal),cinema.seatsLeftInRow(0));
+        } else if (runningTotal<=8){
+            if((randomSeats1 == 3) && (randomSeats2 == 3)){
+                // row 0 = randomSeats1 + randomSeats3
+                int current0SeatsTotal = randomSeats1 + randomSeats3;
+                assertEquals((5-current0SeatsTotal),cinema.seatsLeftInRow(0));
+                assertEquals((5-randomSeats2), cinema.seatsLeftInRow(1));
+            } else {
+                // row 0 = randomSeats1 + randomSeats2
+                int current0SeatsTotal = randomSeats1 + randomSeats2;
+                assertEquals((5-current0SeatsTotal),cinema.seatsLeftInRow(0));
+                assertEquals((5-randomSeats3), cinema.seatsLeftInRow(1));
+            }
+        } else {
+            int seatsLeft11 = 5 - randomSeats1;
+            int seatsLeft12 = 5 - randomSeats2;
+            int seatsLeft13 = 5 - randomSeats3;
+            assertEquals(seatsLeft11,cinema.seatsLeftInRow(0));
+            assertEquals(seatsLeft12,cinema.seatsLeftInRow(1));
+            assertEquals(seatsLeft13,cinema.seatsLeftInRow(2));
+        }
+        assertEquals(5-cinema.seatsLeftInRow(0), rowTickets[0]);
+        assertEquals(5-cinema.seatsLeftInRow(1), rowTickets[1]);
+        assertEquals(5-cinema.seatsLeftInRow(2), rowTickets[2]);
+
+
+        int randomSeats4 = (int)Math.floor(Math.random() * (max - min + 1) + min);
+        runningTotal = randomSeats4 + randomSeats3 + randomSeats2 + randomSeats1;
+        int lastPurchaseAllowed = cinema.buyFilmTickets("jan",randomSeats4);
+        if(lastPurchaseAllowed>=0){
+            rowTickets[lastPurchaseAllowed] += randomSeats4;
+        }
+        if(lastPurchaseAllowed < 0){
+            assertEquals(randomSeats4, 3);
+        } else if (runningTotal<=5){ // within 1 row : 4 buys - 2 + 1 + 1 + 1
+            assertEquals((5-runningTotal),cinema.seatsLeftInRow(0));
+        } else if (runningTotal<=10){ // max within 2 rows : 4 buys - 3 + 3 + 2 + 2
+            int row0 = 5-cinema.seatsLeftInRow(0);
+            int row1 = 5-cinema.seatsLeftInRow(1);
+            assertTrue((row0+row1) >= 4);
+            assertTrue((row0+row1) <= 10);
+        } else{ // max after 2 rows : 4 buys - 3 + 3 + 3 + 2
+            int row0 = 5-cinema.seatsLeftInRow(0);
+            int row1 = 5-cinema.seatsLeftInRow(1);
+            int row2 = 5-cinema.seatsLeftInRow(2);
+            assertTrue((row0+row1+row2) >= 4);
+            assertTrue((row0+row1) <= 11);
+        }
+        assertEquals(5-cinema.seatsLeftInRow(0), rowTickets[0]);
+        assertEquals(5-cinema.seatsLeftInRow(1), rowTickets[1]);
+        assertEquals(5-cinema.seatsLeftInRow(2), rowTickets[2]);
+
+
+        int randomSeats5 = (int)Math.floor(Math.random() * (max - min + 1) + min);
+        runningTotal = randomSeats5+ randomSeats4 + randomSeats3 + randomSeats2 + randomSeats1;
+        lastPurchaseAllowed = cinema.buyFilmTickets("jan",randomSeats5);
+        if(lastPurchaseAllowed>=0){
+            rowTickets[lastPurchaseAllowed] += randomSeats5;
+        } else {
+            assertEquals(randomSeats4, 3);
+        }
+        assertEquals(5-cinema.seatsLeftInRow(0), rowTickets[0]);
+        assertEquals(5-cinema.seatsLeftInRow(1), rowTickets[1]);
+        assertEquals(5-cinema.seatsLeftInRow(2), rowTickets[2]);
     }
 
 }
